@@ -4,8 +4,8 @@ USERNAME=$1
 PASSWORD=$2
 file=credentials.txt
 
-#add useraccount with name passed in as first parameter
-sudo useradd $USERNAME
+#add useraccount with name passed in as first parameter and create home dir
+sudo useradd -m $USERNAME
 
 #check if lenght of password that was passed in is 0, if so generate random  one
 if [ -z $PASSWORD ];
@@ -28,5 +28,15 @@ echo "Welcome to our company! Here are your login credentials." >> credentials.t
 echo "Username: $USERNAME" >> credentials.txt
 echo "Password: $PASSWORD" >> credentials.txt
 
-#send abovementioned file via email
-mail -A /home/ubuntu/Scripting/credentials.txt -s "Your new credentials!" UtrashIknowFPS@protonmail.com < /dev/null
+#send abovementioned file via email and delete from system as we dont want to
+#store plain text creds on PCs
+mail -A credentials.txt -s "Your new credentials!" UtrashIknowFPS@protonmail.com < /dev/null && \
+ echo "Mail has been sent." && \
+ echo "Deleting file from the system." && \
+ rm -rf credentials.txt
+
+#copy company rules to new users home dir
+sudo cp company_rules.txt "/home/$USERNAME/" && \
+ echo "Company rules file was copied to home dir."
+
+
